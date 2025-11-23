@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import "./EditModal.css";
+import "../styles/editmodal.css";
+
 
 export default function EditModal({ bug, onSave, onClose }) {
     const [form, setForm] = useState({

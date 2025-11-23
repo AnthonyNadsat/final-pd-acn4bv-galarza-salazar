@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading }) {
+
     const [nombreJuego, setNombreJuego] = useState('');
     const [plataforma, setPlataforma] = useState('');
     const [tipo, setTipo] = useState('');
@@ -19,7 +20,6 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
         }
     }, [bugToEdit]);
 
-
     const limpiarFormulario = () => {
         setNombreJuego('');
         setPlataforma('');
@@ -31,20 +31,11 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const bugData = {
-            nombreJuego,
-            plataforma,
-            tipo,
-            gravedad,
-            descripcion,
-        };
+        const bugData = { nombreJuego, plataforma, tipo, gravedad, descripcion };
 
-        // Editar
         if (bugToEdit) {
             onBugUpdated({ ...bugData, id: bugToEdit.id });
-        }
-        // Crear
-        else {
+        } else {
             onBugCreated(bugData);
         }
 
@@ -52,7 +43,7 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
     };
 
     return (
-        <form className="bug-form" onSubmit={handleSubmit}>
+        <form className="bug-form" id="bugForm" onSubmit={handleSubmit}>
 
             <input
                 type="text"
@@ -90,9 +81,6 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
                 onChange={(e) => setDescripcion(e.target.value)}
             />
 
-            <button type="submit" disabled={loading}>
-                {bugToEdit ? 'Guardar cambios' : 'Reportar bug'}
-            </button>
         </form>
     );
 }

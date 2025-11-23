@@ -1,32 +1,66 @@
-import { Link } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import "./Header.css";
+import buglogo from "../assets/buglog.png";   // ← IMPORTAR IMAGEN
 
 export default function Header() {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate("/login", { replace: true });
+    };
 
     return (
-        <header className="header">
-            <div className="header-logo">
-                <Link to="/">BugLog</Link>
+        <header className="navbar">
+            <div className="navbar-inner">
+
+                {/* LOGO SOLO */}
+                <div className="navbar-brand">
+                    <img src={buglogo} alt="BugLog" className="navbar-logo" />
+                </div>
+
+                <nav className="navbar-links">
+                    {user && (
+                        <>
+                            <NavLink
+                                to="/"
+                                className={({isActive}) =>
+                                    `nav-link ${isActive ? "nav-link-active" : ""}`
+                                }
+                            >
+                                Reportar bug
+                            </NavLink>
+
+                            <NavLink
+                                to="/reportes"
+                                className={({isActive}) =>
+                                    `nav-link ${isActive ? "nav-link-active" : ""}`
+                                }
+                            >
+                                Historial
+                            </NavLink>
+                        </>
+                    )}
+
+                    {!user && (
+                        <NavLink
+                            to="/login"
+                            className={({isActive}) =>
+                                `nav-link ${isActive ? "nav-link-active" : ""}`
+                            }
+                        >
+                            Login
+                        </NavLink>
+                    )}
+
+                    {user && (
+                        <button className="nav-auth-btn" onClick={handleLogout}>
+                            Cerrar sesión
+                        </button>
+                    )}
+                </nav>
             </div>
-
-            <nav className="header-nav">
-                <Link to="/">Home</Link>
-                <Link to="/reportes">Reportes</Link>
-
-                {!user && <Link to="/login">Login</Link>}
-
-                {user?.role === "admin" && (
-                    <Link to="/admin">Admin</Link>
-                )}
-
-                {user && (
-                    <button className="logout-btn" onClick={logout}>
-                        Cerrar sesión
-                    </button>
-                )}
-            </nav>
         </header>
     );
 }

@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import { fetchBugs, deleteBug, updateBug } from "../services/api";
 import { AuthContext } from "../context/AuthContext";
 import EditModal from "../components/EditModal";
-import "./Reportes.css";
+import "../styles/reportes.css";
 
 export default function Reportes() {
     const { user } = useContext(AuthContext);
@@ -12,7 +12,6 @@ export default function Reportes() {
     const [loading, setLoading] = useState(true);
     const [activeFilter, setActiveFilter] = useState("TODOS");
 
-    // Estado del modal
     const [modalOpen, setModalOpen] = useState(false);
     const [bugToEdit, setBugToEdit] = useState(null);
 
@@ -34,32 +33,24 @@ export default function Reportes() {
 
     function filtrar(tipo) {
         setActiveFilter(tipo);
-
-        if (tipo === "TODOS") {
-            setFiltered(bugs);
-            return;
-        }
-
+        if (tipo === "TODOS") return setFiltered(bugs);
         setFiltered(bugs.filter(b => b.gravedad.toUpperCase() === tipo));
     }
 
-    // ELIMINAR
     const handleDelete = async (id) => {
         try {
             await deleteBug(id);
-            await cargarBugs(); // refrescar
+            await cargarBugs();
         } catch (err) {
             console.error("Error al eliminar:", err);
         }
     };
 
-    // EDITAR — se abre modal
     const openEditModal = (bug) => {
         setBugToEdit(bug);
         setModalOpen(true);
     };
 
-    // GUARDAR CAMBIOS DEL MODAL
     const handleSaveEdit = async (updatedBug) => {
         try {
             await updateBug(updatedBug.id, updatedBug);
@@ -72,12 +63,11 @@ export default function Reportes() {
     };
 
     return (
-        <div className="reportes-container">
-            <h1 className="reportes-title">Historial de bugs</h1>
+        <main className="reportes-wrapper">
 
             {/* FILTROS */}
             <div className="filtros-container">
-                {["TODOS","BAJA","MEDIA","ALTA"].map(f => (
+                {["TODOS", "BAJA", "MEDIA", "ALTA"].map(f => (
                     <button
                         key={f}
                         className={`filtro-btn ${activeFilter === f ? "active" : ""}`}
@@ -88,37 +78,46 @@ export default function Reportes() {
                 ))}
             </div>
 
+            {/* LISTADO */}
             {loading ? (
                 <p>Cargando...</p>
             ) : (
-                <div className="cards-container">
-                    {filtered.map(bug => (
-                        <div key={bug.id} className="bug-card-report">
-
-                            <div className={`badge-report badge-${bug.gravedad.toLowerCase()}`}>
-                                PRIORIDAD {bug.gravedad.toUpperCase()}
-                            </div>
-
-                            <div className="bug-report-title">
-                                {bug.nombreJuego} • {bug.plataforma} • {bug.tipo}
-                            </div>
-
-                            <div className="bug-report-desc">{bug.descripcion}</div>
-                            <div className="bug-report-date">{bug.fecha}</div>
-
-                            {user?.role === "admin" && (
-                                <div className="report-actions">
-                                    <button className="btn-delete" onClick={() => handleDelete(bug.id)}>
-                                        Eliminar
-                                    </button>
-
-                                    <button className="btn-edit" onClick={() => openEditModal(bug)}>
-                                        Editar
-                                    </button>
-                                </div>
-                            )}
+                <div className="reportes-content">
+                    {filtered.length === 0 ? (
+                        <div className="empty-state-big">
+                            No hay bugs reportados
                         </div>
-                    ))}
+                    ) : (
+                        filtered.map(bug => (
+                            <div key={bug.id} className="bug-card-report">
+                                <div className={`badge-report badge-${bug.gravedad.toLowerCase()}`}>
+                                    PRIORIDAD {bug.gravedad.toUpperCase()}
+                                </div>
+
+                                <div className="bug-report-title">
+                                    {bug.nombreJuego} • {bug.plataforma} • {bug.tipo}
+                                </div>
+
+                                <div className="bug-report-desc">
+                                    {bug.descripcion}
+                                </div>
+
+                                <div className="bug-report-date">{bug.fecha}</div>
+
+                                {user?.role === "admin" && (
+                                    <div className="report-actions">
+                                        <button className="btn-delete" onClick={() => handleDelete(bug.id)}>
+                                            Eliminar
+                                        </button>
+
+                                        <button className="btn-edit" onClick={() => openEditModal(bug)}>
+                                            Editar
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    )}
                 </div>
             )}
 
@@ -130,6 +129,6 @@ export default function Reportes() {
                     onSave={handleSaveEdit}
                 />
             )}
-        </div>
+        </main>
     );
 }

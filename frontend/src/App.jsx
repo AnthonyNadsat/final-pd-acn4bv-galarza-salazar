@@ -1,96 +1,64 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+
 import Header from "./components/Header";
-import { AuthProvider } from "./context/AuthContext";
 import RequireAdmin from "./components/RequireAdmin";
+import RequireAuth from "./components/RequireAuth";
+import { AuthProvider } from "./context/AuthContext";
 
 import Home from "./pages/Home";
 import Reportes from "./pages/Reportes";
 import Login from "./pages/Login";
-import Admin from "./pages/Admin";
 
-import { deleteBug, updateBug, fetchBugs } from "./services/api";
-import { useEffect, useState } from "react";
+
+import { deleteBug } from "./services/api";
 
 export default function App() {
-
-    const [bugs, setBugs] = useState([]);
-    const [bugToEdit, setBugToEdit] = useState(null);
-
-    useEffect(() => {
-        cargar();
-    }, []);
-
-    async function cargar() {
-        try {
-            const data = await fetchBugs();
-            setBugs(data);
-        } catch (e) {
-            console.error("Error cargando bugs", e);
-        }
-    }
+    const [bugs, setBugs] = useState([]); // si no lo usás mucho, igual lo dejamos
 
     const handleDeleteBug = async (id) => {
         try {
             await deleteBug(id);
-            await cargar();
+            setBugs((prev) => prev.filter((b) => b.id !== id));
         } catch (err) {
             console.error("Error al eliminar bug:", err);
         }
     };
 
-    const handleStartEdit = (bug) => {
-        setBugToEdit(bug);
-    };
-
-    const handleSaveEdit = async (updatedBug) => {
-        try {
-            await updateBug(updatedBug.id, updatedBug);
-            await cargar();
-            setBugToEdit(null);
-        } catch (err) {
-            console.error("Error al actualizar bug:", err);
-        }
-    };
-
     return (
         <AuthProvider>
-            <BrowserRouter>
+            <div className="app-root">
+                <BrowserRouter>
+                    <Header />
 
-                <Header />
+                    <div className="app-layout">
+                        <Routes>
+                            {/* Login SIEMPRE accesible */}
+                            <Route path="/login" element={<Login />} />
 
-                <div className="app-layout">
-                    <Routes>
-                        <Route path="/" element={
-                            <Home
-                                bugToEdit={bugToEdit}
-                                onSaveEdit={handleSaveEdit}
-                                onCancelEdit={() => setBugToEdit(null)}
+                            {/* Rutas que requieren estar logueado */}
+                            <Route
+                                path="/"
+                                element={
+                                    <RequireAuth>
+                                        <Home />
+                                    </RequireAuth>
+                                }
                             />
-                        } />
 
-                        <Route path="/reportes" element={
-                            <Reportes
-                                bugs={bugs}
-                                onDelete={handleDeleteBug}
-                                onEdit={handleStartEdit}
+                            <Route
+                                path="/reportes"
+                                element={
+                                    <RequireAuth>
+                                        <Reportes onDelete={handleDeleteBug} />
+                                    </RequireAuth>
+                                }
                             />
-                        } />
 
-                        <Route path="/login" element={<Login />} />
-
-                        <Route path="/admin" element={
-                            <RequireAdmin>
-                                <Admin
-                                    bugs={bugs}
-                                    onDelete={handleDeleteBug}
-                                    onEdit={handleStartEdit}
-                                />
-                            </RequireAdmin>
-                        } />
-                    </Routes>
-                </div>
-
-            </BrowserRouter>
+                        </Routes>
+                    </div>
+                </BrowserRouter>
+            </div>
         </AuthProvider>
     );
 }

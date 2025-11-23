@@ -1,0 +1,147 @@
+/* === CONTENEDOR GENERAL === */
+.reportes-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 80px 20px 40px; /* baja el card hacia el centro visual */
+    text-align: center;
+}
+
+/* === FILTROS === */
+.filtros-container {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 32px;
+}
+
+.filtro-btn {
+    padding: 8px 22px;
+    border-radius: 20px;
+    font-size: 14px;
+    background: #2a2a42;
+    border: 1px solid #38385a;
+    color: #ddd;
+    cursor: pointer;
+    transition: .25s;
+}
+
+.filtro-btn:hover {
+    background: #373759;
+    transform: translateY(-2px);
+}
+
+.filtro-btn.active {
+    background: #ec4899;
+    color: white;
+    border-color: #ec4899;
+}
+
+/* === CONTENEDOR DE CARDS === */
+.reportes-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
+
+/* === CARD DE BUG (más pequeña, cuadrada, centrada) === */
+.bug-card-report {
+    width: 100%;
+    max-width: 550px; /* más pequeño, más cuadrado */
+    padding: 24px;
+    border-radius: 16px;
+    background: rgba(20, 20, 35, 0.85);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    margin-bottom: 22px;
+    text-align: left;
+}
+
+/* === BADGES === */
+.badge-report {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: white;
+}
+
+.badge-baja { background: #10b981; }
+.badge-media { background: #f59e0b; }
+.badge-alta { background: #ef4444; }
+
+/* === TEXTO === */
+.bug-report-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: white;
+}
+
+.bug-report-desc {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 6px;
+}
+
+.bug-report-date {
+    font-size: 12px;
+    color: #888;
+}
+
+/* === ACCIONES === */
+.report-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.btn-delete,
+.btn-edit {
+    flex: 1;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .25s;
+}
+
+/* Botón eliminar */
+.btn-delete {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+}
+
+/* Botón editar */
+.btn-edit {
+    background: linear-gradient(45deg, #ec4899, #8b5cf6);
+    color: white;
+}
+
+.btn-edit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+}
+
+/* === EMPTY STATE === */
+.empty-state-big {
+    margin-top: 40px;
+    padding: 26px 40px;
+    border-radius: 16px;
+    font-size: 15px;
+    color: #ccc;
+    background: rgba(20, 20, 35, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    backdrop-filter: blur(4px);
+}

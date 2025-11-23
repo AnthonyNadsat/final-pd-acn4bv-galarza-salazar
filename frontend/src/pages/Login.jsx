@@ -1,51 +1,69 @@
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import "../styles/login.css";
+
 
 export default function Login() {
     const { login } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
 
+    const from = location.state?.from?.pathname || "/";
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        setErrorMsg("");
 
-        const result = login(username, password);
-
+        const result = login(username.trim(), password.trim());
         if (!result.ok) {
-            setErrorMsg(result.message);
+            setErrorMsg(result.message || "Credenciales incorrectas");
             return;
         }
 
-        navigate("/");
+        navigate(from, { replace: true });
     };
 
     return (
-        <div>
-            <h1>Login</h1>
+        <main className="page login-page page-centered">
+            <div className="page-inner">
+                <div className="card login-card">
+                    <h1 className="login-title">Ingresar a BugLog</h1>
 
-            {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
+                    {errorMsg && <div className="alert alert-error">{errorMsg}</div>}
 
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="Usuario"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-row">
+                            <label className="form-label">Usuario</label>
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="admin o tester"
+                            />
+                        </div>
 
-                <input
-                    type="password"
-                    placeholder="Contraseña"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
+                        <div className="form-row">
+                            <label className="form-label">Contraseña</label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="1234"
+                            />
+                        </div>
 
-                <button type="submit">Ingresar</button>
-            </form>
-        </div>
+                        <button type="submit" className="btn btn-primary btn-full mt-md">
+                            Ingresar
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </main>
     );
 }
