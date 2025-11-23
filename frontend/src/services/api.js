@@ -9,7 +9,9 @@ export async function fetchBugs() {
 export async function createBug(bugData) {
     const res = await fetch(API_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify(bugData),
     });
 
@@ -24,7 +26,10 @@ export async function createBug(bugData) {
 
 export async function deleteBug(id) {
     const res = await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+            "x-admin": "true"
+        }
     });
 
     if (!res.ok) throw new Error('Error al eliminar bug');
@@ -34,7 +39,10 @@ export async function deleteBug(id) {
 export async function updateBug(id, bugData) {
     const res = await fetch(`${API_URL}/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            "x-admin": "true"
+        },
         body: JSON.stringify(bugData),
     });
 
