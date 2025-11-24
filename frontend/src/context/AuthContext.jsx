@@ -6,7 +6,7 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
 
     const login = (username, password) => {
-        // Usuarios hardcodeados momentaneamente
+        // Usuarios hardcodeados
         const usuarios = [
             { username: "admin", password: "1234", role: "admin" },
             { username: "tester", password: "1234", role: "tester" }

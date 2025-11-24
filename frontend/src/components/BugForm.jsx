@@ -8,7 +8,7 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
     const [gravedad, setGravedad] = useState('Baja');
     const [descripcion, setDescripcion] = useState('');
 
-    const [errors, setErrors] = useState([]); // <-- NUEVO
+    const [errors, setErrors] = useState([]);
 
     useEffect(() => {
         if (bugToEdit) {
@@ -17,7 +17,7 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
             setTipo(bugToEdit.tipo);
             setGravedad(bugToEdit.gravedad);
             setDescripcion(bugToEdit.descripcion);
-            setErrors([]); // limpiamos errores si está editando
+            setErrors([]);
         } else {
             limpiarFormulario();
         }
@@ -32,16 +32,11 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
         setErrors([]);
     };
 
-    // -------------------------
-    // VALIDACIONES (NUEVO)
-    // -------------------------
     const validarFormulario = () => {
         const newErrors = [];
 
         if (!nombreJuego.trim()) {
             newErrors.push("El nombre del juego es obligatorio.");
-        } else if (nombreJuego.trim().length < 2) {
-            newErrors.push("El nombre del juego debe tener al menos 2 caracteres.");
         }
 
         if (!plataforma) {
@@ -65,7 +60,6 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // VALIDACIÓN
         if (!validarFormulario()) return;
 
         const bugData = { nombreJuego, plataforma, tipo, gravedad, descripcion };
@@ -82,7 +76,7 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
     return (
         <form className="bug-form" id="bugForm" onSubmit={handleSubmit}>
 
-            {/* Mostrar errores (NUEVO) */}
+
             {errors.length > 0 && (
                 <div className="error-box">
                     {errors.map((err, index) => (
@@ -91,42 +85,55 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
                 </div>
             )}
 
+            {/* -----------Juego----------- */}
+            <label className="form-label">¿En qué juego apareció?</label>
             <input
                 type="text"
-                placeholder="Juego"
+                placeholder="Escribí el nombre del juego"
                 value={nombreJuego}
                 onChange={(e) => setNombreJuego(e.target.value)}
             />
 
+            {/* -----------Plataforma----------- */}
+            <label className="form-label">Plataforma</label>
             <select value={plataforma} onChange={(e) => setPlataforma(e.target.value)}>
-                <option value="">Seleccionar...</option>
+                <option value="">Seleccioná una plataforma</option>
                 <option value="PC">PC</option>
                 <option value="PlayStation 5">PlayStation 5</option>
-                <option value="Xbox Series">Xbox Series</option>
+                <option value="PlayStation 4">PlayStation 4</option>
+                <option value="Xbox Series X">Xbox Series X</option>
+                <option value="Xbox Series S">Xbox Series S</option>
                 <option value="Nintendo Switch">Nintendo Switch</option>
+                <option value="Nintendo Switch 2">Nintendo Switch 2</option>
                 <option value="Android">Android</option>
                 <option value="iOS">iOS</option>
             </select>
 
+            {/* -----------Tipo de Bug----------- */}
+            <label className="form-label">Tipo de Bug</label>
             <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
-                <option value="">Seleccionar...</option>
+                <option value="">Seleccioná un tipo de bug</option>
                 <option value="Gráfico">Gráfico</option>
                 <option value="Audio">Audio</option>
                 <option value="Gameplay">Gameplay</option>
             </select>
 
+            {/* -----------Gravedad----------- */}
+            <label className="form-label">Gravedad</label>
+
             <select value={gravedad} onChange={(e) => setGravedad(e.target.value)}>
-                <option value="Baja">Baja</option>
+                <option value ="Baja">Baja</option>
                 <option value="Media">Media</option>
                 <option value="Alta">Alta</option>
             </select>
 
+            {/* -----------Descripción----------- */}
+            <label className="form-label">Contanos qué pasó</label>
             <textarea
-                placeholder="Descripción"
+                placeholder="Describí el bug con el mayor detalle posible"
                 value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}
             />
-
         </form>
     );
 }

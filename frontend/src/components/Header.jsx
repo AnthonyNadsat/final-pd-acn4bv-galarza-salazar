@@ -15,7 +15,7 @@ export default function Header() {
         <header className="navbar">
             <div className="navbar-inner">
 
-                {/* LOGO SOLO */}
+
                 <div className="navbar-brand">
                     <img src={buglogo} alt="BugLog" className="navbar-logo" />
                 </div>

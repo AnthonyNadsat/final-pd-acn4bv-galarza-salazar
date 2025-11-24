@@ -65,7 +65,7 @@ export default function Reportes() {
     return (
         <main className="reportes-wrapper">
 
-            {/* FILTROS */}
+            {/* Filtros */}
             <div className="filtros-container">
                 {["TODOS", "BAJA", "MEDIA", "ALTA"].map(f => (
                     <button
@@ -78,7 +78,7 @@ export default function Reportes() {
                 ))}
             </div>
 
-            {/* LISTADO */}
+            {/* Lista */}
             {loading ? (
                 <p>Cargando...</p>
             ) : (
@@ -121,7 +121,7 @@ export default function Reportes() {
                 </div>
             )}
 
-            {/* MODAL */}
+            {/* Modal */}
             {modalOpen && (
                 <EditModal
                     bug={bugToEdit}

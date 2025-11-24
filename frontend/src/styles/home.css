@@ -60,3 +60,11 @@
     border-color: #50535f;
     box-shadow: 0 6px 18px rgba(0,0,0,0.25);
 }
+
+.form-label {
+    color: #ccc;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    margin-top: 12px;
+    display: block;
+}

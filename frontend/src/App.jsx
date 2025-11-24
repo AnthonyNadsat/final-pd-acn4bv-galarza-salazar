@@ -33,10 +33,10 @@ export default function App() {
 
                     <div className="app-layout">
                         <Routes>
-                            {/* Login SIEMPRE accesible */}
+
                             <Route path="/login" element={<Login />} />
 
-                            {/* Rutas que requieren estar logueado */}
+
                             <Route
                                 path="/"
                                 element={

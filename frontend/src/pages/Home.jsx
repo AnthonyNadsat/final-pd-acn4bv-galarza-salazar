@@ -37,17 +37,17 @@ export default function Home() {
             <div className="page-inner">
                 <div className="card home-card">
 
-                    <h1 className="page-title">¿En qué juego apareció?</h1>
+                    <h1 className="page-title">Reportá tu bug</h1>
 
                     {errorMsg && <div className="alert alert-error">{errorMsg}</div>}
                     {successMsg && <div className="alert alert-success">{successMsg}</div>}
 
-                    {/* Formulario normal */}
+
                     <BugForm onBugCreated={handleCreate} loading={loading} />
 
                     <div className="home-actions">
 
-                        {/* ESTE ES EL ÚNICO BOTÓN QUE ENVÍA EL FORM */}
+
                         <button
                             type="submit"
                             form="bugForm"
