@@ -1,11 +1,11 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { fetchBugs, deleteBug, updateBug } from "../services/api";
-import { AuthContext } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import EditModal from "../components/EditModal";
 import "../styles/reportes.css";
 
 export default function Reportes() {
-    const { user } = useContext(AuthContext);
+    const { user } = useAuth();
 
     const [bugs, setBugs] = useState([]);
     const [filtered, setFiltered] = useState([]);
@@ -21,11 +21,12 @@ export default function Reportes() {
 
     async function cargarBugs() {
         try {
+            setLoading(true);
             const data = await fetchBugs();
             setBugs(data);
             setFiltered(data);
         } catch (err) {
-            console.error("Error al cargar:", err);
+            console.error("Error al cargar bugs:", err);
         } finally {
             setLoading(false);
         }
@@ -38,11 +39,16 @@ export default function Reportes() {
     }
 
     const handleDelete = async (id) => {
+        if (!window.confirm("¿Estás seguro de eliminar este bug?")) {
+            return;
+        }
+
         try {
             await deleteBug(id);
             await cargarBugs();
         } catch (err) {
             console.error("Error al eliminar:", err);
+            alert(err.message || "Error al eliminar el bug");
         }
     };
 
@@ -59,13 +65,23 @@ export default function Reportes() {
             await cargarBugs();
         } catch (err) {
             console.error("Error al actualizar:", err);
+            alert(err.message || "Error al actualizar el bug");
         }
+    };
+
+    // Función para verificar si el usuario puede editar/eliminar un bug
+    const canModifyBug = (bug) => {
+        if (!user) return false;
+
+        // Admin puede editar/eliminar cualquier bug
+        if (user.role === 'admin') return true;
+
+        // Tester solo puede editar/eliminar sus propios bugs
+        return bug.userId === user.id;
     };
 
     return (
         <main className="reportes-wrapper">
-
-            {/* Filtros */}
             <div className="filtros-container">
                 {["TODOS", "BAJA", "MEDIA", "ALTA"].map(f => (
                     <button
@@ -78,9 +94,10 @@ export default function Reportes() {
                 ))}
             </div>
 
-            {/* Lista */}
             {loading ? (
-                <p>Cargando...</p>
+                <p style={{ textAlign: 'center', color: '#ccc', marginTop: '40px' }}>
+                    Cargando bugs...
+                </p>
             ) : (
                 <div className="reportes-content">
                     {filtered.length === 0 ? (
@@ -102,15 +119,28 @@ export default function Reportes() {
                                     {bug.descripcion}
                                 </div>
 
-                                <div className="bug-report-date">{bug.fecha}</div>
+                                <div className="bug-report-date">
+                                    {bug.fecha}
+                                    {bug.createdBy && (
+                                        <span style={{ marginLeft: '10px', color: '#888' }}>
+                                            • Reportado por: <strong>{bug.createdBy}</strong>
+                                        </span>
+                                    )}
+                                </div>
 
-                                {user?.role === "admin" && (
+                                {canModifyBug(bug) && (
                                     <div className="report-actions">
-                                        <button className="btn-delete" onClick={() => handleDelete(bug.id)}>
+                                        <button
+                                            className="btn-delete"
+                                            onClick={() => handleDelete(bug.id)}
+                                        >
                                             Eliminar
                                         </button>
 
-                                        <button className="btn-edit" onClick={() => openEditModal(bug)}>
+                                        <button
+                                            className="btn-edit"
+                                            onClick={() => openEditModal(bug)}
+                                        >
                                             Editar
                                         </button>
                                     </div>
@@ -121,7 +151,6 @@ export default function Reportes() {
                 </div>
             )}
 
-            {/* Modal */}
             {modalOpen && (
                 <EditModal
                     bug={bugToEdit}

@@ -1,56 +1,156 @@
-const API_URL = 'http://localhost:3000/api/bugs';
+const API_URL = 'http://localhost:3000/api';
 
-export async function fetchBugs() {
-    const res = await fetch(API_URL);
-    if (!res.ok) throw new Error('Error al obtener bugs');
-    return res.json();
-}
 
-export async function createBug(bugData) {
-    const res = await fetch(API_URL, {
+const getAuthToken = () => {
+    return localStorage.getItem('token');
+};
+
+
+const getAuthHeaders = () => {
+    const token = getAuthToken();
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
+
+    return headers;
+};
+
+
+export async function register(userData) {
+    const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
+        body: JSON.stringify(userData),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw new Error(data.message || 'Error al registrar usuario');
+    }
+
+    return data;
+}
+
+export async function login(credentials) {
+    const res = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(credentials),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw new Error(data.message || 'Error al iniciar sesión');
+    }
+
+    return data;
+}
+
+export async function getProfile() {
+    const res = await fetch(`${API_URL}/auth/profile`, {
+        headers: getAuthHeaders()
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw new Error(data.message || 'Error al obtener perfil');
+    }
+
+    return data;
+}
+
+
+export async function fetchBugs() {
+    const res = await fetch(`${API_URL}/bugs`);
+
+    if (!res.ok) {
+        throw new Error('Error al obtener bugs');
+    }
+
+    const data = await res.json();
+    return data.data;
+}
+
+export async function fetchBugById(id) {
+    const res = await fetch(`${API_URL}/bugs/${id}`);
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw new Error(data.message || 'Error al obtener el bug');
+    }
+
+    return data.data;
+}
+
+export async function fetchMyBugs() {
+    const res = await fetch(`${API_URL}/bugs/user/my-bugs`, {
+        headers: getAuthHeaders()
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw new Error(data.message || 'Error al obtener tus bugs');
+    }
+
+    return data.data;
+}
+
+export async function createBug(bugData) {
+    const res = await fetch(`${API_URL}/bugs`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
         body: JSON.stringify(bugData),
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
-        const errorBody = await res.json().catch(() => ({}));
-        const msg = errorBody.message || 'Error al crear bug';
-        throw new Error(msg);
+        throw new Error(data.message || 'Error al crear bug');
     }
 
-    return res.json();
-}
-
-export async function deleteBug(id) {
-    const res = await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE',
-        headers: {
-            "x-admin": "true"
-        }
-    });
-
-    if (!res.ok) throw new Error('Error al eliminar bug');
-    return res.json();
+    return data;
 }
 
 export async function updateBug(id, bugData) {
-    const res = await fetch(`${API_URL}/${id}`, {
+    const res = await fetch(`${API_URL}/bugs/${id}`, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            "x-admin": "true"
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(bugData),
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
-        const errorBody = await res.json().catch(() => ({}));
-        const msg = errorBody.message || 'Error al actualizar bug';
-        throw new Error(msg);
+        throw new Error(data.message || 'Error al actualizar bug');
     }
 
-    return res.json();
+    return data;
+}
+
+export async function deleteBug(id) {
+    const res = await fetch(`${API_URL}/bugs/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw new Error(data.message || 'Error al eliminar bug');
+    }
+
+    return data;
 }

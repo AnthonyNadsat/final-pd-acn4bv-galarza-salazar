@@ -1,64 +1,68 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from "react";
 
 import Header from "./components/Header";
-import RequireAdmin from "./components/RequireAdmin";
 import RequireAuth from "./components/RequireAuth";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 import Home from "./pages/Home";
 import Reportes from "./pages/Reportes";
 import Login from "./pages/Login";
 
+function AppContent() {
+    const { loading } = useAuth();
 
-import { deleteBug } from "./services/api";
-
-export default function App() {
-    const [bugs, setBugs] = useState([]); // si no lo usás mucho, igual lo dejamos
-
-    const handleDeleteBug = async (id) => {
-        try {
-            await deleteBug(id);
-            setBugs((prev) => prev.filter((b) => b.id !== id));
-        } catch (err) {
-            console.error("Error al eliminar bug:", err);
-        }
-    };
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '100vh',
+                color: 'white',
+                fontSize: '18px'
+            }}>
+                Cargando...
+            </div>
+        );
+    }
 
     return (
+        <div className="app-root">
+            <BrowserRouter>
+                <Header />
+
+                <div className="app-layout">
+                    <Routes>
+                        <Route path="/login" element={<Login />} />
+
+                        <Route
+                            path="/"
+                            element={
+                                <RequireAuth>
+                                    <Home />
+                                </RequireAuth>
+                            }
+                        />
+
+                        <Route
+                            path="/reportes"
+                            element={
+                                <RequireAuth>
+                                    <Reportes />
+                                </RequireAuth>
+                            }
+                        />
+                    </Routes>
+                </div>
+            </BrowserRouter>
+        </div>
+    );
+}
+
+export default function App() {
+    return (
         <AuthProvider>
-            <div className="app-root">
-                <BrowserRouter>
-                    <Header />
-
-                    <div className="app-layout">
-                        <Routes>
-
-                            <Route path="/login" element={<Login />} />
-
-
-                            <Route
-                                path="/"
-                                element={
-                                    <RequireAuth>
-                                        <Home />
-                                    </RequireAuth>
-                                }
-                            />
-
-                            <Route
-                                path="/reportes"
-                                element={
-                                    <RequireAuth>
-                                        <Reportes onDelete={handleDeleteBug} />
-                                    </RequireAuth>
-                                }
-                            />
-
-                        </Routes>
-                    </div>
-                </BrowserRouter>
-            </div>
+            <AppContent />
         </AuthProvider>
     );
 }

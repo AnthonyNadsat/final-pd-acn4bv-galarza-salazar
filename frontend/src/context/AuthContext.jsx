@@ -1,40 +1,77 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { login as loginAPI, getProfile } from "../services/api";
 
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const login = (username, password) => {
-        // Usuarios hardcodeados
-        const usuarios = [
-            { username: "admin", password: "1234", role: "admin" },
-            { username: "tester", password: "1234", role: "tester" }
-        ];
+    useEffect(() => {
+        const checkAuth = async () => {
+            const token = localStorage.getItem('token');
 
-        const found = usuarios.find(
-            u => u.username === username && u.password === password
-        );
+            if (token) {
+                try {
+                    const response = await getProfile();
+                    setUser(response.data);
+                } catch (error) {
+                    console.error('Token inválido o expirado:', error);
+                    localStorage.removeItem('token');
+                    setUser(null);
+                }
+            }
 
-        if (!found) {
-            return { ok: false, message: "Credenciales incorrectas" };
+            setLoading(false);
+        };
+
+        checkAuth();
+    }, []);
+
+    const login = async (username, password) => {
+        try {
+            const response = await loginAPI({ username, password });
+
+            // Guardar token en localStorage
+            localStorage.setItem('token', response.data.token);
+
+
+            setUser(response.data.user);
+
+            return { ok: true };
+        } catch (error) {
+            return {
+                ok: false,
+                message: error.message || 'Credenciales incorrectas'
+            };
         }
-
-        setUser(found);
-        return { ok: true };
     };
 
-    const logout = () => setUser(null);
+    const logout = () => {
+        localStorage.removeItem('token');
+        setUser(null);
+    };
+
+
+    const updateUser = (updatedUser) => {
+        setUser(updatedUser);
+    };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ user, login, logout, loading, updateUser }}>
             {children}
         </AuthContext.Provider>
     );
 }
 
 export function useAuth() {
-    return useContext(AuthContext);
+    const context = useContext(AuthContext);
+
+    if (!context) {
+        throw new Error('useAuth debe usarse dentro de AuthProvider');
+    }
+
+    return context;
 }
 
 export default AuthContext;

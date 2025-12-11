@@ -5,7 +5,6 @@ import { createBug } from "../services/api";
 import "../styles/home.css";
 
 export default function Home() {
-
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
     const [successMsg, setSuccessMsg] = useState("");
@@ -21,14 +20,25 @@ export default function Home() {
             await createBug(bugData);
 
             setSuccessMsg("Bug reportado correctamente");
-        } catch (err) {
-            setErrorMsg(err.message || "Error al reportar el bug");
-        } finally {
-            setLoading(false);
+
+
             setTimeout(() => {
                 setSuccessMsg("");
-                setErrorMsg("");
-            }, 3000);
+            }, 2000);
+
+        } catch (err) {
+
+            if (err.message.includes('Token expirado') || err.message.includes('Token inválido')) {
+                setErrorMsg("Tu sesión ha expirado. Por favor inicia sesión nuevamente.");
+                setTimeout(() => {
+                    localStorage.removeItem('token');
+                    navigate('/login');
+                }, 2000);
+            } else {
+                setErrorMsg(err.message || "Error al reportar el bug");
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -36,36 +46,32 @@ export default function Home() {
         <main className="page home-page">
             <div className="page-inner">
                 <div className="card home-card">
-
                     <h1 className="page-title">Reportá tu bug</h1>
 
                     {errorMsg && <div className="alert alert-error">{errorMsg}</div>}
                     {successMsg && <div className="alert alert-success">{successMsg}</div>}
 
-
                     <BugForm onBugCreated={handleCreate} loading={loading} />
 
                     <div className="home-actions">
-
-
                         <button
                             type="submit"
                             form="bugForm"
                             className="btn btn-primary"
                             disabled={loading}
                         >
-                            Reportar bug
+                            {loading ? 'Reportando...' : 'Reportar bug'}
                         </button>
 
                         <button
                             type="button"
                             className="btn btn-secondary"
                             onClick={() => navigate("/reportes")}
+                            disabled={loading}
                         >
                             Ver historial
                         </button>
                     </div>
-
                 </div>
             </div>
         </main>
