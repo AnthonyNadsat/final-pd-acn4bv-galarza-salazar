@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import "../styles/editmodal.css";
 
-
 export default function EditModal({ bug, onSave, onClose }) {
     const [form, setForm] = useState({
         nombreJuego: "",
         plataforma: "",
         tipo: "",
         gravedad: "",
-        descripcion: ""
+        descripcion: "",
+        imageUrl: ""
     });
 
     useEffect(() => {
@@ -18,7 +18,8 @@ export default function EditModal({ bug, onSave, onClose }) {
                 plataforma: bug.plataforma,
                 tipo: bug.tipo,
                 gravedad: bug.gravedad,
-                descripcion: bug.descripcion
+                descripcion: bug.descripcion,
+                imageUrl: bug.imageUrl || ""
             });
         }
     }, [bug]);
@@ -29,7 +30,7 @@ export default function EditModal({ bug, onSave, onClose }) {
 
     function handleSubmit(e) {
         e.preventDefault();
-        onSave({ ...bug, ...form }); // combina original + cambios
+        onSave({ ...bug, ...form });
     }
 
     return (
@@ -38,7 +39,6 @@ export default function EditModal({ bug, onSave, onClose }) {
                 <h2>Editar bug</h2>
 
                 <form onSubmit={handleSubmit}>
-
                     <input
                         type="text"
                         name="nombreJuego"
@@ -51,8 +51,11 @@ export default function EditModal({ bug, onSave, onClose }) {
                         <option value="">Seleccionar...</option>
                         <option value="PC">PC</option>
                         <option value="PlayStation 5">PlayStation 5</option>
-                        <option value="Xbox Series">Xbox Series</option>
+                        <option value="PlayStation 4">PlayStation 4</option>
+                        <option value="Xbox Series X">Xbox Series X</option>
+                        <option value="Xbox Series S">Xbox Series S</option>
                         <option value="Nintendo Switch">Nintendo Switch</option>
+                        <option value="Nintendo Switch 2">Nintendo Switch 2</option>
                         <option value="Android">Android</option>
                         <option value="iOS">iOS</option>
                     </select>
@@ -75,6 +78,14 @@ export default function EditModal({ bug, onSave, onClose }) {
                         value={form.descripcion}
                         onChange={handleChange}
                         placeholder="Descripción"
+                    />
+
+                    <input
+                        type="text"
+                        name="imageUrl"
+                        value={form.imageUrl}
+                        onChange={handleChange}
+                        placeholder="URL de imagen (opcional)"
                     />
 
                     <div className="modal-actions">

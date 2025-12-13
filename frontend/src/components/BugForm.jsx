@@ -7,6 +7,7 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
     const [tipo, setTipo] = useState('');
     const [gravedad, setGravedad] = useState('Baja');
     const [descripcion, setDescripcion] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
 
     const [errors, setErrors] = useState([]);
 
@@ -17,6 +18,7 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
             setTipo(bugToEdit.tipo);
             setGravedad(bugToEdit.gravedad);
             setDescripcion(bugToEdit.descripcion);
+            setImageUrl(bugToEdit.imageUrl || '');
             setErrors([]);
         } else {
             limpiarFormulario();
@@ -29,6 +31,7 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
         setTipo('');
         setGravedad('Baja');
         setDescripcion('');
+        setImageUrl('');
         setErrors([]);
     };
 
@@ -62,7 +65,14 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
 
         if (!validarFormulario()) return;
 
-        const bugData = { nombreJuego, plataforma, tipo, gravedad, descripcion };
+        const bugData = {
+            nombreJuego,
+            plataforma,
+            tipo,
+            gravedad,
+            descripcion,
+            imageUrl: imageUrl.trim() || null
+        };
 
         if (bugToEdit) {
             onBugUpdated({ ...bugData, id: bugToEdit.id });
@@ -75,7 +85,6 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
 
     return (
         <form className="bug-form" id="bugForm" onSubmit={handleSubmit}>
-
 
             {errors.length > 0 && (
                 <div className="error-box">
@@ -120,9 +129,8 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
 
             {/* -----------Gravedad----------- */}
             <label className="form-label">Gravedad</label>
-
             <select value={gravedad} onChange={(e) => setGravedad(e.target.value)}>
-                <option value ="Baja">Baja</option>
+                <option value="Baja">Baja</option>
                 <option value="Media">Media</option>
                 <option value="Alta">Alta</option>
             </select>
@@ -133,6 +141,15 @@ export default function BugForm({ onBugCreated, onBugUpdated, bugToEdit, loading
                 placeholder="Describí el bug con el mayor detalle posible"
                 value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}
+            />
+
+            {/* -----------URL de imagen----------- */}
+            <label className="form-label">URL de portada (opcional)</label>
+            <input
+                type="text"
+                placeholder="https://ejemplo.com/imagen.jpg"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
             />
         </form>
     );

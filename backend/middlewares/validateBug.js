@@ -36,7 +36,13 @@ export const bugValidationRules = [
         .notEmpty()
         .withMessage('La descripción es obligatoria')
         .isLength({ min: 10, max: 500 })
-        .withMessage('La descripción debe tener entre 10 y 500 caracteres')
+        .withMessage('La descripción debe tener entre 10 y 500 caracteres'),
+
+    body('imageUrl')
+        .optional({ checkFalsy: true })
+        .trim()
+        .isURL()
+        .withMessage('Debe ser una URL válida')
 ];
 
 // Middleware para manejar errores de validacion

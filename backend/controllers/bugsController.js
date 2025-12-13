@@ -4,12 +4,12 @@ import { asyncHandler, AppError } from "../middlewares/errorHandler.js";
 // GET ALL
 export const getBugs = asyncHandler(async (req, res, next) => {
     const query = `
-        SELECT 
+        SELECT
             bugs.*,
             users.username as createdBy,
             users.role as creatorRole
         FROM bugs
-        LEFT JOIN users ON bugs.userId = users.id
+                 LEFT JOIN users ON bugs.userId = users.id
         ORDER BY bugs.id DESC
     `;
 
@@ -27,13 +27,13 @@ export const getBugById = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
 
     const query = `
-        SELECT 
+        SELECT
             bugs.*,
             users.username as createdBy,
             users.email as creatorEmail,
             users.role as creatorRole
         FROM bugs
-        LEFT JOIN users ON bugs.userId = users.id
+                 LEFT JOIN users ON bugs.userId = users.id
         WHERE bugs.id = ?
     `;
 
@@ -51,13 +51,13 @@ export const getBugById = asyncHandler(async (req, res, next) => {
 
 // POST (CREATE)
 export const createBug = asyncHandler(async (req, res, next) => {
-    const { nombreJuego, plataforma, tipo, gravedad, descripcion } = req.body;
+    const { nombreJuego, plataforma, tipo, gravedad, descripcion, imageUrl } = req.body;
     const userId = req.user.id;
     const fecha = new Date().toLocaleString("es-AR");
 
     const query = db.prepare(`
-        INSERT INTO bugs (nombreJuego, plataforma, tipo, gravedad, descripcion, fecha, userId)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO bugs (nombreJuego, plataforma, tipo, gravedad, descripcion, imageUrl, fecha, userId)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     const result = query.run(
@@ -66,17 +66,18 @@ export const createBug = asyncHandler(async (req, res, next) => {
         tipo,
         gravedad,
         descripcion,
+        imageUrl || null,
         fecha,
         userId
     );
 
     const newBugQuery = `
-        SELECT 
+        SELECT
             bugs.*,
             users.username as createdBy,
             users.role as creatorRole
         FROM bugs
-        LEFT JOIN users ON bugs.userId = users.id
+                 LEFT JOIN users ON bugs.userId = users.id
         WHERE bugs.id = ?
     `;
 
@@ -92,7 +93,7 @@ export const createBug = asyncHandler(async (req, res, next) => {
 // PUT (UPDATE)
 export const updateBug = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
-    const { nombreJuego, plataforma, tipo, gravedad, descripcion } = req.body;
+    const { nombreJuego, plataforma, tipo, gravedad, descripcion, imageUrl } = req.body;
 
     const existing = db.prepare("SELECT * FROM bugs WHERE id = ?").get(id);
 
@@ -100,24 +101,24 @@ export const updateBug = asyncHandler(async (req, res, next) => {
         throw new AppError('Bug no encontrado', 404);
     }
 
-    // Verificar permisos
+
     if (existing.userId !== req.user.id && req.user.role !== 'admin') {
         throw new AppError('No tienes permiso para editar este bug', 403);
     }
 
     db.prepare(`
         UPDATE bugs
-        SET nombreJuego=?, plataforma=?, tipo=?, gravedad=?, descripcion=?
+        SET nombreJuego=?, plataforma=?, tipo=?, gravedad=?, descripcion=?, imageUrl=?
         WHERE id=?
-    `).run(nombreJuego, plataforma, tipo, gravedad, descripcion, id);
+    `).run(nombreJuego, plataforma, tipo, gravedad, descripcion, imageUrl || null, id);
 
     const updatedQuery = `
-        SELECT 
+        SELECT
             bugs.*,
             users.username as createdBy,
             users.role as creatorRole
         FROM bugs
-        LEFT JOIN users ON bugs.userId = users.id
+                 LEFT JOIN users ON bugs.userId = users.id
         WHERE bugs.id = ?
     `;
 
@@ -140,7 +141,7 @@ export const deleteBug = asyncHandler(async (req, res, next) => {
         throw new AppError('Bug no encontrado', 404);
     }
 
-    // Verificar permisos
+
     if (existing.userId !== req.user.id && req.user.role !== 'admin') {
         throw new AppError('No tienes permiso para eliminar este bug', 403);
     }
@@ -158,12 +159,12 @@ export const getMyBugs = asyncHandler(async (req, res, next) => {
     const userId = req.user.id;
 
     const query = `
-        SELECT 
+        SELECT
             bugs.*,
             users.username as createdBy,
             users.role as creatorRole
         FROM bugs
-        LEFT JOIN users ON bugs.userId = users.id
+                 LEFT JOIN users ON bugs.userId = users.id
         WHERE bugs.userId = ?
         ORDER BY bugs.id DESC
     `;

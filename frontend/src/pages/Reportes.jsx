@@ -69,14 +69,9 @@ export default function Reportes() {
         }
     };
 
-    // Función para verificar si el usuario puede editar/eliminar un bug
     const canModifyBug = (bug) => {
         if (!user) return false;
-
-        // Admin puede editar/eliminar cualquier bug
         if (user.role === 'admin') return true;
-
-        // Tester solo puede editar/eliminar sus propios bugs
         return bug.userId === user.id;
     };
 
@@ -107,44 +102,53 @@ export default function Reportes() {
                     ) : (
                         filtered.map(bug => (
                             <div key={bug.id} className="bug-card-report">
-                                <div className={`badge-report badge-${bug.gravedad.toLowerCase()}`}>
-                                    PRIORIDAD {bug.gravedad.toUpperCase()}
-                                </div>
-
-                                <div className="bug-report-title">
-                                    {bug.nombreJuego} • {bug.plataforma} • {bug.tipo}
-                                </div>
-
-                                <div className="bug-report-desc">
-                                    {bug.descripcion}
-                                </div>
-
-                                <div className="bug-report-date">
-                                    {bug.fecha}
-                                    {bug.createdBy && (
-                                        <span style={{ marginLeft: '10px', color: '#888' }}>
-                                            • Reportado por: <strong>{bug.createdBy}</strong>
-                                        </span>
-                                    )}
-                                </div>
-
-                                {canModifyBug(bug) && (
-                                    <div className="report-actions">
-                                        <button
-                                            className="btn-delete"
-                                            onClick={() => handleDelete(bug.id)}
-                                        >
-                                            Eliminar
-                                        </button>
-
-                                        <button
-                                            className="btn-edit"
-                                            onClick={() => openEditModal(bug)}
-                                        >
-                                            Editar
-                                        </button>
+                                {/* IMAGEN DE PORTADA */}
+                                {bug.imageUrl && (
+                                    <div className="bug-card-image">
+                                        <img src={bug.imageUrl} alt={bug.nombreJuego} />
                                     </div>
                                 )}
+
+                                <div className="bug-card-content">
+                                    <div className={`badge-report badge-${bug.gravedad.toLowerCase()}`}>
+                                        PRIORIDAD {bug.gravedad.toUpperCase()}
+                                    </div>
+
+                                    <div className="bug-report-title">
+                                        {bug.nombreJuego} • {bug.plataforma} • {bug.tipo}
+                                    </div>
+
+                                    <div className="bug-report-desc">
+                                        {bug.descripcion}
+                                    </div>
+
+                                    <div className="bug-report-date">
+                                        {bug.fecha}
+                                        {bug.createdBy && (
+                                            <span style={{ marginLeft: '10px', color: '#888' }}>
+                                                • Reportado por: <strong>{bug.createdBy}</strong>
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {canModifyBug(bug) && (
+                                        <div className="report-actions">
+                                            <button
+                                                className="btn-delete"
+                                                onClick={() => handleDelete(bug.id)}
+                                            >
+                                                Eliminar
+                                            </button>
+
+                                            <button
+                                                className="btn-edit"
+                                                onClick={() => openEditModal(bug)}
+                                            >
+                                                Editar
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ))
                     )}
