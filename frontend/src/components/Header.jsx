@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import buglogo from "../assets/buglog.png";   // ← IMPORTAR IMAGEN
+import buglogo from "../assets/buglog.png";
 
 export default function Header() {
     const { user, logout } = useAuth();
@@ -14,8 +14,6 @@ export default function Header() {
     return (
         <header className="navbar">
             <div className="navbar-inner">
-
-
                 <div className="navbar-brand">
                     <img src={buglogo} alt="BugLog" className="navbar-logo" />
                 </div>
@@ -40,6 +38,18 @@ export default function Header() {
                             >
                                 Historial
                             </NavLink>
+
+
+                            {user.role === 'admin' && (
+                                <NavLink
+                                    to="/admin/users"
+                                    className={({isActive}) =>
+                                        `nav-link ${isActive ? "nav-link-active" : ""}`
+                                    }
+                                >
+                                    Usuarios
+                                </NavLink>
+                            )}
                         </>
                     )}
 

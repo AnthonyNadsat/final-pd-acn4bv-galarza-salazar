@@ -154,3 +154,61 @@ export async function deleteBug(id) {
 
     return data;
 }
+
+export const getAllUsers = async () => {
+    const response = await fetch(`${API_URL}/users`, {
+        method: 'GET',
+        headers: getAuthHeaders()
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al obtener usuarios');
+    }
+
+    return response.json();
+};
+
+export const createUser = async (userData) => {
+    const response = await fetch(`${API_URL}/users`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(userData)
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al crear usuario');
+    }
+
+    return response.json();
+};
+
+export const updateUser = async (id, userData) => {
+    const response = await fetch(`${API_URL}/users/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(userData)
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al actualizar usuario');
+    }
+
+    return response.json();
+};
+
+export const deleteUser = async (id) => {
+    const response = await fetch(`${API_URL}/users/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al eliminar usuario');
+    }
+
+    return response.json();
+};
